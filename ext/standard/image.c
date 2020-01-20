@@ -1214,20 +1214,8 @@ static struct gfxinfo *php_handle_avif(php_stream * stream) {
                 break_condition = 1;
                 break;
 
-            case 1718909296u:    /* ftyp */
-            case 1718773093u:    /* free */
-            case 1936419184u:    /* skip */
-            case 1835295092u:    /* mdat */
-            case 1751411826u:    /* hdlr */
-            case 1768517222u:    /* iinf */
-            case 1768714083u:    /* iloc */
-            case 1768975713u:    /* ipma */
-            case 1885434736u:    /* pasp */
-            case 1885960297u:    /* pixi */
-            case 1635135811u:    /* av1C */
+            default:
                 break;
-            default:             /* type is unknown */
-                return NULL;
         }
 
         pos = end;
