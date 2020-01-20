@@ -1171,10 +1171,11 @@ static struct gfxinfo *php_handle_webp(php_stream * stream)
  */
 static struct gfxinfo *php_handle_avif(php_stream * stream) {
 	struct gfxinfo *result = NULL;
-	unsigned int width = 0, height = 0, channels = 0, bits = 0;
+	unsigned int width = 0, height = 0;
+	unsigned char channels = 0, bits = 0, i, bits_tmp;
 	unsigned int size, type;
 	size_t begin, end, pos = 0;
-	int break_condition = 0, eof;
+	int check_ispe = 0, check_pixi = 0, eof;
 
 	if (php_stream_seek(stream, 0, SEEK_SET)) {
 		return NULL;
@@ -1183,7 +1184,7 @@ static struct gfxinfo *php_handle_avif(php_stream * stream) {
 		eof = php_stream_eof(stream);
 		if (eof == -1) {
 			return NULL;
-		} else if (break_condition == 1 || eof == 1) {
+		} else if ((check_ispe == 1 && check_pixi == 1) || eof == 1) {
 			break;
 		}
 
@@ -1211,7 +1212,33 @@ static struct gfxinfo *php_handle_avif(php_stream * stream) {
 				pos += 4;
 				width  = php_read4(stream); pos += 4;
 				height = php_read4(stream); pos += 4;
-				break_condition = 1;
+				check_ispe = 1;
+				break;
+
+			case 1885960297u:    /* pixi */
+				if (php_stream_seek(stream, 4, SEEK_CUR)) {
+					return NULL;
+				}
+				pos += 4;
+
+				/* channels */
+				if (php_stream_read(stream, (char *)&channels, 1) != 1) {
+					return NULL;
+				}
+				pos++;
+
+				/* bits */
+				for (i = 0; i < channels; i++) {
+					if (php_stream_read(stream, (char *)&bits_tmp, 1) != 1) {
+						return NULL;
+					}
+					pos++;
+
+					if (bits_tmp > bits) {
+						bits = bits_tmp;
+					}
+				}
+				check_pixi = 1;
 				break;
 
 			default:
