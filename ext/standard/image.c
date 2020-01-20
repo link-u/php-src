@@ -1209,7 +1209,7 @@ static struct gfxinfo *php_handle_avif(php_stream * stream) {
 					return NULL;
 				}
 				pos += 4;
-				width = php_read4(stream);  pos += 4;
+				width  = php_read4(stream); pos += 4;
 				height = php_read4(stream); pos += 4;
 				break_condition = 1;
 				break;
@@ -1229,9 +1229,9 @@ static struct gfxinfo *php_handle_avif(php_stream * stream) {
 		return NULL;
 	}
 
-	result->width = width;
-	result->height = height;
-	result->bits = bits;
+	result->width    = width;
+	result->height   = height;
+	result->bits     = bits;
 	result->channels = channels;
 	return result;
 }
