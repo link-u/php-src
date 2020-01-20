@@ -1177,55 +1177,54 @@ static struct gfxinfo *php_handle_avif(php_stream * stream) {
 	int break_condition = 0, eof;
 
 	if (php_stream_seek(stream, 0, SEEK_SET)) {
-        return NULL;
-    }
-    for(;;) {
-        eof = php_stream_eof(stream);
-        if (eof == -1) {
-            return NULL;
-        } else if (break_condition == 1 || eof == 1) {
-            break;
-        }
+		return NULL;
+	}
+	for(;;) {
+		eof = php_stream_eof(stream);
+		if (eof == -1) {
+			return NULL;
+		} else if (break_condition == 1 || eof == 1) {
+			break;
+		}
 
-        begin = pos;
-        size  = php_read4(stream); pos += 4;
-        type  = php_read4(stream); pos += 4;
-        end   = begin + size;
+		begin = pos;
+		size  = php_read4(stream); pos += 4;
+		type  = php_read4(stream); pos += 4;
+		end   = begin + size;
 
-        switch (type) {
-            case 1835365473u:    /* meta */
-                if (php_stream_seek(stream, 4, SEEK_CUR)) {
-                    return NULL;
-                }
-                pos += 4;
-                continue;
+		switch (type) {
+			case 1835365473u:    /* meta */
+				if (php_stream_seek(stream, 4, SEEK_CUR)) {
+					return NULL;
+				}
+				pos += 4;
+				continue;
 
-            case 1768977008u:    /* iprp */
-            case 1768973167u:    /* ipco */
-                continue;
+			case 1768977008u:    /* iprp */
+			case 1768973167u:    /* ipco */
+				continue;
 
-            case 1769173093u:    /* ispe */
-                if (php_stream_seek(stream, 4, SEEK_CUR)) {
-                    return NULL;
-                }
-                pos += 4;
-                width = php_read4(stream);  pos += 4;
-                height = php_read4(stream); pos += 4;
-                break_condition = 1;
-                break;
+			case 1769173093u:    /* ispe */
+				if (php_stream_seek(stream, 4, SEEK_CUR)) {
+					return NULL;
+				}
+				pos += 4;
+				width = php_read4(stream);  pos += 4;
+				height = php_read4(stream); pos += 4;
+				break_condition = 1;
+				break;
 
-            default:
-                break;
-        }
+			default:
+				break;
+		}
 
-        pos = end;
-        if (php_stream_seek(stream, end, SEEK_SET)) {
-            return NULL;
-        }
-    }
+		pos = end;
+		if (php_stream_seek(stream, end, SEEK_SET)) {
+			return NULL;
+		}
+	}
 
-
-    result = (struct gfxinfo *) ecalloc(1, sizeof(struct gfxinfo));
+	result = (struct gfxinfo *) ecalloc(1, sizeof(struct gfxinfo));
 	if (result == NULL) {
 		return NULL;
 	}
