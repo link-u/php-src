@@ -29,7 +29,7 @@ $image_types = array (
 	IMAGETYPE_JPEG2000,
 	IMAGETYPE_XBM,
 	IMAGETYPE_WEBP,
-    IMAGETYPE_AVIF
+	IMAGETYPE_AVIF
 );
 
 	foreach($image_types as $image_type) {
